@@ -429,12 +429,14 @@ LICECaptureCompressor *g_cap_lcf;
 
 #ifdef SEND_HTTP
 
+bool g_uploaded = true;
 bool g_send_files = false;
 char g_send_domain[2048];
 char g_send_passkey[2048];
 char g_send_user[2048];
 #ifdef _WIN32
 NOTIFYICONDATA g_notification;
+bool g_notification_shown = false;
 #endif
 
 #endif
@@ -725,7 +727,11 @@ void printDebug(const char* szFormat, ...)
 #ifdef _WIN32
 void CALLBACK CloseNotification(HWND hwndDlg, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 {
-  Shell_NotifyIcon(NIM_DELETE, &g_notification);
+  if (g_notification_shown)
+  {
+    Shell_NotifyIcon(NIM_DELETE, &g_notification);
+    g_notification_shown = false;
+  }
   KillTimer(hwndDlg, idEvent);
 }
 #endif
@@ -802,8 +808,9 @@ void Capture_Finish(HWND hwndDlg)
 
 #ifdef SEND_HTTP
   
-  if (g_send_files)
+  if (g_send_files && !g_uploaded)
   {
+    g_uploaded = true;
     std::string url(g_send_domain);
     url += "upload.php";
     //std::string url = "http://www.httpbin.org/post";
@@ -852,6 +859,7 @@ void Capture_Finish(HWND hwndDlg)
       
       info.uVersion = NOTIFYICON_VERSION_4;
       g_notification = info;
+      g_notification_shown = true;
 
       Shell_NotifyIcon(NIM_ADD, &info);
       Shell_NotifyIcon(NIM_SETVERSION, &info);
@@ -865,6 +873,12 @@ void Capture_Finish(HWND hwndDlg)
       printDebug("%s\n", req.text.c_str());
     }
   }
+#ifdef _WIN32
+  else if (g_notification_shown)
+  {
+    Shell_NotifyIcon(NIM_DELETE, &g_notification);
+  }
+#endif
 
 #endif
 }
@@ -1769,6 +1783,10 @@ static WDL_DLGRET liceCapMainProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
               delete g_cap_bm_inv;
               g_cap_bm_inv = LICE_CreateSysBitmap(w,h);
               g_cap_bm = new LICE_WrapperBitmap(g_cap_bm_inv->getBits(),g_cap_bm_inv->getWidth(),g_cap_bm_inv->getHeight(),g_cap_bm_inv->getRowSpan(),true);
+#endif
+
+#ifdef SEND_HTTP
+              g_uploaded = false;
 #endif
 
               g_dotitle = ((g_prefs&1) && g_titlems);
