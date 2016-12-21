@@ -23,6 +23,7 @@
 #include <windows.h>
 #include <process.h>
 #include <multimon.h>
+#include <iostream>
 #else
 #include "../WDL/swell/swell.h"
 #endif
@@ -30,8 +31,17 @@
 #include "../WDL/mutex.h"
 #include "../WDL/wdlcstring.h"
 
-
+#define NO_LCF_SUPPORT
+//#define REAPER_LICECAP
 //#define TEST_MULTIPLE_MODES
+
+#define SEND_HTTP
+
+#ifdef SEND_HTTP
+
+#include <cpr/cpr.h>
+
+#endif
 
 #ifdef REAPER_LICECAP
   #define NO_LCF_SUPPORT
@@ -417,6 +427,18 @@ DWORD g_last_frame_capture_time;
 LICECaptureCompressor *g_cap_lcf;
 #endif
 
+#ifdef SEND_HTTP
+
+bool g_send_files = false;
+char g_send_domain[2048];
+char g_send_passkey[2048];
+char g_send_user[2048];
+#ifdef _WIN32
+NOTIFYICONDATA g_notification;
+#endif
+
+#endif
+
 #ifdef VIDEO_ENCODER_SUPPORT
 VideoEncoder *g_cap_video;
 char g_cap_video_ext[32];
@@ -688,6 +710,27 @@ void SaveRestoreRecRect(HWND hwndDlg, bool restore)
 }
 void SWELL_SetWindowResizeable(HWND, bool);
 
+void printDebug(const char* szFormat, ...)
+{
+  char szBuff[1024];
+  va_list arg;
+  va_start(arg, szFormat);
+  _vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
+  va_end(arg);
+
+  OutputDebugString(szBuff);
+}
+
+#ifdef SEND_HTTP
+#ifdef _WIN32
+void CALLBACK CloseNotification(HWND hwndDlg, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+{
+  Shell_NotifyIcon(NIM_DELETE, &g_notification);
+  KillTimer(hwndDlg, idEvent);
+}
+#endif
+#endif
+
 void Capture_Finish(HWND hwndDlg)
 {
   SetDlgItemText(hwndDlg,IDC_REC,"Record...");
@@ -756,7 +799,111 @@ void Capture_Finish(HWND hwndDlg)
 
   delete g_cap_bm;
   g_cap_bm=0;
+
+#ifdef SEND_HTTP
+  
+  if (g_send_files)
+  {
+    std::string url(g_send_domain);
+    url += "upload.php";
+    //std::string url = "http://www.httpbin.org/post";
+    std::string filepath(g_last_fn);
+    std::string user(g_send_user);
+    std::string passkey(g_send_passkey);
+
+    auto file = cpr::Part("image", cpr::File(filepath), "image/gif");
+
+    auto req = cpr::Post(cpr::Url{ url },
+      cpr::Multipart{ {"user", user }, { "password", passkey }, file });
+    
+    std::string result = req.text;
+    if (result.find("success,") == 0)
+    {
+      result = std::string(g_send_domain) + result.substr(8, result.length() - 8);
+      // Clipboard!
+      OpenClipboard(hwndDlg);
+      EmptyClipboard();
+      HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, result.size() + 1);
+      if (!hg)
+      {
+        CloseClipboard();
+        return;
+      }
+      memcpy(GlobalLock(hg), result.c_str(), result.size() + 1);
+      GlobalUnlock(hg);
+      SetClipboardData(CF_TEXT, hg);
+      CloseClipboard();
+      GlobalFree(hg);
+
+#ifdef _WIN32
+      NOTIFYICONDATA info = { };
+      info.cbSize = sizeof(info);
+      info.hWnd = hwndDlg;
+      info.uFlags = NIF_INFO | NIF_ICON | NIF_GUID;
+      GUID id;
+      CoCreateGuid(&id);
+      info.guidItem = id;
+
+      info.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+      
+      strcpy(info.szInfoTitle, "Gif uploaded");
+      strcpy(info.szInfo, "Image URL copied to your clipboard");
+      info.dwInfoFlags = NIIF_INFO;
+      
+      info.uVersion = NOTIFYICON_VERSION_4;
+      g_notification = info;
+
+      Shell_NotifyIcon(NIM_ADD, &info);
+      Shell_NotifyIcon(NIM_SETVERSION, &info);
+      //Shell_NotifyIcon()
+      SetTimer(hwndDlg, 0, 4000, CloseNotification);
+#endif
+    }
+    else
+    {
+      // Unknown error
+      printDebug("%s\n", req.text.c_str());
+    }
+  }
+
+#endif
 }
+
+#ifdef SEND_HTTP
+WDL_DLGRET HttpOptionsProc(HWND hwndDlg, UINT Message, WPARAM wParam, LPARAM lParam)
+{
+  switch (Message)
+  {
+  case WM_INITDIALOG:
+    if (g_send_files)
+    {
+      CheckDlgButton(hwndDlg, IDC_SEND_HTTP, BST_CHECKED);
+    }
+    SetDlgItemText(hwndDlg, IDC_ADDRESS, g_send_domain);
+    SetDlgItemText(hwndDlg, IDC_PASSKEY, g_send_passkey);
+    SetDlgItemText(hwndDlg, IDC_USER, g_send_user);
+    break;
+  case WM_COMMAND:
+    switch (LOWORD(wParam))
+    {
+    case IDOK:
+    case IDCANCEL:
+      EndDialog(hwndDlg, 0);
+      break;
+
+    }
+    break;
+  case WM_DESTROY:
+    g_send_files = IsDlgButtonChecked(hwndDlg, IDC_SEND_HTTP);
+    GetDlgItemText(hwndDlg, IDC_ADDRESS, g_send_domain, 2048);
+    GetDlgItemText(hwndDlg, IDC_PASSKEY, g_send_passkey, 2048);
+    GetDlgItemText(hwndDlg, IDC_USER, g_send_user, 2048);
+    break;
+  }
+  return 0;
+}
+
+#endif
 
 #ifdef VIDEO_ENCODER_SUPPORT
 
@@ -828,6 +975,9 @@ static UINT_PTR CALLBACK SaveOptsProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPA
       EnableWindow(GetDlgItem(hwndDlg, IDC_BIGFONT), (g_prefs&1));
       EnableWindow(GetDlgItem(hwndDlg, IDC_TITLE), (g_prefs&1));
       SetDlgItemInt(hwndDlg, IDC_LOOPCNT, g_gif_loopcount,FALSE);
+#ifndef SEND_HTTP
+      ShowWindow(GetDlgItem(hwndDlg, IDC_HTTP_OPTIONS), false);
+#endif
 #ifndef VIDEO_ENCODER_SUPPORT
       ShowWindow(GetDlgItem(hwndDlg, IDC_BUTTON1), false);
 #endif
@@ -889,6 +1039,11 @@ static UINT_PTR CALLBACK SaveOptsProc(HWND hwndDlg, UINT msg, WPARAM wParam, LPA
           }  
 #endif
         return 0;
+#ifdef SEND_HTTP
+        case IDC_HTTP_OPTIONS:
+          DialogBox(g_hInst, MAKEINTRESOURCE(IDD_HTTP), hwndDlg, HttpOptionsProc);
+          break;
+#endif
 #ifdef VIDEO_ENCODER_SUPPORT
         case IDC_BUTTON1:
           DialogBox(g_hInst,MAKEINTRESOURCE(IDD_OPTIONS),hwndDlg,VideoOptionsProc);
@@ -1104,6 +1259,14 @@ void SaveConfig(HWND hwndDlg)
 
   WritePrivateProfileString("licecap","title",g_title,g_ini_file.Get());
 
+#ifdef SEND_HTTP
+  sprintf(buf, "%d", g_send_files);
+  WritePrivateProfileString("licecap", "http_send", buf, g_ini_file.Get());
+  WritePrivateProfileString("licecap", "http_domain", g_send_domain, g_ini_file.Get());
+  WritePrivateProfileString("licecap", "http_passkey", g_send_passkey, g_ini_file.Get());
+  WritePrivateProfileString("licecap", "http_user", g_send_user, g_ini_file.Get());
+#endif
+
 #ifdef VIDEO_ENCODER_SUPPORT
   sprintf(buf, "%d", g_cap_video_vbr);
   WritePrivateProfileString("licecap","video_vbr",buf,g_ini_file.Get());
@@ -1183,6 +1346,13 @@ static WDL_DLGRET liceCapMainProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
       g_stop_after_msec = GetPrivateProfileInt("licecap", "stopafter", g_stop_after_msec, g_ini_file.Get());
 
       GetPrivateProfileString("licecap","title","",g_title,sizeof(g_title),g_ini_file.Get());
+
+#ifdef SEND_HTTP
+      g_send_files = GetPrivateProfileInt("licecap", "http_send", g_send_files, g_ini_file.Get());
+      GetPrivateProfileString("licecap", "http_domain", "", g_send_domain, sizeof(g_send_domain), g_ini_file.Get());
+      GetPrivateProfileString("licecap", "http_passkey", "", g_send_passkey, sizeof(g_send_passkey), g_ini_file.Get());
+      GetPrivateProfileString("licecap", "http_user", "", g_send_user, sizeof(g_send_user), g_ini_file.Get());
+#endif
 
 #ifdef VIDEO_ENCODER_SUPPORT
       g_cap_video_vbr = GetPrivateProfileInt("licecap", "video_vbr", g_cap_video_vbr, g_ini_file.Get());

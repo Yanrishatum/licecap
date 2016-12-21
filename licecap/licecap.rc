@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,23 +13,82 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Russian (Russia) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_DIALOG1 DIALOG DISCARDABLE  0, 0, 551, 335
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_HTTP DIALOGEX 0, 0, 296, 90
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Imageserve options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,239,69,50,14
+    CONTROL         "Send over HTTP",IDC_SEND_HTTP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,67,10
+    EDITTEXT        IDC_ADDRESS,37,17,252,14,ES_AUTOHSCROLL
+    LTEXT           "Domain:",IDC_LABEL_ADDRESS,7,20,27,8
+    LTEXT           "Passkey:",IDC_LABEL_PASSWORD,7,36,30,8
+    LTEXT           "User:",IDC_LABEL_USER,7,53,18,8
+    EDITTEXT        IDC_PASSKEY,37,34,252,14,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_USER,37,51,252,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_HTTP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 289
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_HTTP AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Russian (Russia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 551, 335
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "LICEcap"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Insert...",IDC_INSERT,430,320,41,12
     PUSHBUTTON      "Record...",IDC_REC,474,320,41,12
@@ -40,48 +99,41 @@ BEGIN
     EDITTEXT        IDC_XSZ,80,320,21,12,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "x",IDC_DIMLBL,103,322,8,8
     EDITTEXT        IDC_YSZ,110,320,21,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Status (i.e. 640x480 x fps 3:21 etc)",IDC_STATUS,"Static",
-                    SS_LEFTNOWORDWRAP | WS_GROUP,7,322,420,8
+    CONTROL         "Status (i.e. 640x480 x fps 3:21 etc)",IDC_STATUS,"Static",SS_LEFTNOWORDWRAP | WS_GROUP,7,322,420,8
     CONTROL         "",IDC_VIEWRECT,"Static",SS_BLACKFRAME,4,4,543,314
 END
 
 IDD_SAVEOPTS DIALOGEX 0, 0, 317, 93
-STYLE DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
 EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Display in animation",IDC_STATIC,0,4,99,51
-    CONTROL         "title frame:",IDC_TITLEUSE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,18,45,10
+    CONTROL         "title frame:",IDC_TITLEUSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,18,45,10
     EDITTEXT        IDC_MS,54,16,26,13,ES_AUTOHSCROLL
     LTEXT           "sec",IDC_STATIC,82,18,14,8
-    CONTROL         "elapsed time",IDC_TIMELINE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,31,76,10
-    CONTROL         "mouse button press",IDC_MOUSECAP,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,43,75,10
+    CONTROL         "elapsed time",IDC_TIMELINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,31,76,10
+    CONTROL         "mouse button press",IDC_MOUSECAP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,43,75,10
     EDITTEXT        IDC_TITLE,105,8,208,36,ES_MULTILINE | ES_WANTRETURN
-    CONTROL         "Big font",IDC_BIGFONT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,275,46,37,10
+    CONTROL         "Big font",IDC_BIGFONT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,275,46,37,10
     PUSHBUTTON      "WEBM options...",IDC_BUTTON1,238,77,75,14
-    CONTROL         "Control+Alt+P pauses recording",IDC_SSPAUSE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,105,46,115,10
+    CONTROL         "Control+Alt+P pauses recording",IDC_SSPAUSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,105,46,115,10
     LTEXT           ".GIF repeat count (0=infinite):",IDC_STATIC,0,63,92,8
     EDITTEXT        IDC_LOOPCNT,94,61,34,13,ES_AUTOHSCROLL
     CONTROL         "Use .GIF transparency for smaller files",IDC_CHECK1,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,132,62,134,10
-    CONTROL         "Automatically stop after",IDC_CHECK2,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,2,78,87,10
+    CONTROL         "Automatically stop after",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,2,78,87,10
     EDITTEXT        IDC_STOPAFTER_SEC,92,77,26,13,ES_AUTOHSCROLL
     LTEXT           "seconds",IDC_STOPAFTER_SEC_LBL,120,79,28,8
+    PUSHBUTTON      "Imageserve...",IDC_HTTP_OPTIONS,159,72,75,14
 END
 
 IDD_INSERT DIALOGEX 0, 0, 281, 122
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Insert text frame"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDIT,5,5,270,96,ES_MULTILINE | ES_AUTOVSCROLL | 
-                    ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_EDIT,5,5,270,96,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
     LTEXT           "Duration:",IDC_STATIC,5,108,32,8
     EDITTEXT        IDC_MS,39,106,27,12,ES_AUTOHSCROLL
     LTEXT           "Alpha:",IDC_STATIC,80,108,25,8
@@ -90,8 +142,8 @@ BEGIN
     PUSHBUTTON      "Close",IDCANCEL,235,106,41,12
 END
 
-IDD_OPTIONS DIALOG DISCARDABLE  0, 0, 317, 78
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_OPTIONS DIALOG 0, 0, 317, 78
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "WEBM options"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -112,7 +164,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
@@ -127,6 +179,10 @@ BEGIN
         RIGHTMARGIN, 313
         TOPMARGIN, 4
         BOTTOMMARGIN, 92
+    END
+
+    IDD_INSERT, DIALOG
+    BEGIN
     END
 
     IDD_OPTIONS, DIALOG
@@ -146,18 +202,18 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -173,8 +229,25 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON    DISCARDABLE     "icon1.ico"
-#endif    // English (U.S.) resources
+IDI_ICON1               ICON                    "icon1.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_SAVEOPTS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

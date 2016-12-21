@@ -1,0 +1,10 @@
+*.opendb
+*.db
+*.ncb
+*.aps
+*.sdf
+*.cachefile
+*.opensdf
+licecap/Debug_new/*
+licecap/.vs/*
+*.user

@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by licecap.rc
 //
 #define IDD_DIALOG1                     101
@@ -7,6 +7,7 @@
 #define IDD_SAVEOPTS                    104
 #define IDD_INSERT                      105
 #define IDD_OPTIONS                     106
+#define IDD_HTTP                        108
 #define IDC_BROWSE                      1000
 #define IDC_REC                         1001
 #define IDC_STOP                        1002
@@ -31,19 +32,28 @@
 #define IDC_INSERT                      1016
 #define IDC_EDIT2                       1016
 #define IDC_EDIT                        1017
+#define IDC_USER                        1017
 #define IDC_ALPHA                       1018
 #define IDC_BUTTON1                     1020
+#define IDC_BUTTON2                     1021
+#define IDC_HTTP_OPTIONS                1021
 #define IDC_CHECK1                      1022
 #define IDC_CHECK2                      1023
 #define IDC_STOPAFTER_SEC_LBL           1024
+#define IDC_SEND_HTTP                   1025
+#define IDC_LABEL_ADDRESS               1026
+#define IDC_LABEL_PASSWORD              1027
+#define IDC_LABEL_USER                  1028
+#define IDC_ADDRESS                     1029
+#define IDC_PASSKEY                     1030
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        111
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1025
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
